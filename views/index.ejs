@@ -1,237 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Vinyl Room | Discover Your Next Favorite</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/discovery.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>WebSeek — Find your next client</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script defer src="/main.js"></script>
 </head>
 
-<body class="home-page">
-
-    <header class="site-header">
-        <nav class="navbar">
-            <a href="/" class="logo">VINYL ROOM</a>
-
-            <div class="nav-links">
-                <% if (currentUser) { %>
-                    <a href="/profile">My Profile</a>
-                    <a href="/songs/new" class="nav-signup">Share a Song</a>
-
-                    <form action="/logout" method="POST">
-                        <button type="submit" class="nav-logout">Log Out</button>
-                    </form>
-                    <% } else { %>
-                        <a href="/login">Log In</a>
-                        <a href="/signup" class="nav-signup">Sign Up</a>
-                        <% } %>
-            </div>
-        </nav>
-    </header>
+<body>
+    <aside><a class="brand" href="#dashboard"><span>↗</span> WebSeek<span class="dot">.</span></a>
+        <p class="eyebrow">YOUR WORKSPACE</p>
+        <nav aria-label="Main navigation"><a href="#dashboard">◫ &nbsp; Dashboard</a>
+            <a href="#discover">⌕ &nbsp; Discover</a>
+            <a href="#pipeline">▥ &nbsp; Pipeline</a>
+            <a href="#tasks">✓ &nbsp; Tasks</a></nav>
+        <div class="sidebar-note"><strong>A little research.<br>A new opportunity.</strong>
+            <p>Your next client could be around the corner.</p>
+        </div>
+        <footer><span class="avatar">JD</span> Demo workspace</footer>
+    </aside>
 
     <main>
+        <header><span>WORKSPACE / <span id="crumb">DASHBOARD</span></span><span class="badge">● &nbsp; Prototype · mock + live</span></header>
 
-        <% if (!currentUser) { %>
-            <section class="hero">
-                <div class="hero-content">
-                    <p class="eyebrow">WELCOME TO VINYL ROOM</p>
+        <section class="heading">
+            <div>
+                <h1>Your next client starts here.</h1>
+                <p class="sub">
+                    Discover businesses, review their websites, and track your prospects.
+                </p>
+            </div>
+        </section>
 
-                    <h1>Good music deserves to be shared.</h1>
-
-                    <p class="hero-description">
-                        Discover new sounds, share your favorite tracks,
-                        and connect with people who love music as much
-                        as you do.
-                    </p>
-
-                    <a href="/signup" class="cta-button">
-                        Join the Room →
-                    </a>
-                </div>
-
-                <div class="hero-art" aria-hidden="true">
-                    <div class="vinyl-record">
-                        <div class="record-label"></div>
-                    </div>
-                </div>
-            </section>
-            <% } %>
-
-                <section class="discover">
-
-                    <div class="discover-heading">
-                        <p class="eyebrow">THE COMMUNITY'S PICKS</p>
-                        <h2>Recently Shared.</h2>
-
-                        <p class="section-description">
-                            See what everyone's been listening to.
-                        </p>
-                    </div>
-
-                    <% if (songs.length===0) { %>
-
-                        <p class="empty-state">
-                            No songs have been shared yet. Be the first!
-                        </p>
-
-                        <% } else { %>
-
-                            <div class="songs-grid">
-
-                                <% songs.forEach(song=> { %>
-
-                                    <article class="song-card">
-
-                                        <div class="song-art">
-                                            <% if (song.albumArt) { %>
-                                                <img src="<%= song.albumArt %>"
-                                                    alt="Album artwork for <%= song.title %>" loading="lazy">
-                                                <% } else { %>
-                                                    <span aria-hidden="true">♫</span>
-                                                    <% } %>
-                                        </div>
-
-                                        <div class="song-info">
-
-                                            <span class="song-genre">
-                                                <%= song.genre %>
-                                            </span>
-
-                                            <h3>
-                                                <a href="/songs/<%= song._id %>">
-                                                    <%= song.title %>
-                                                </a>
-                                            </h3>
-
-                                            <p class="song-artist">
-                                                <%= song.artist %>
-                                            </p>
-
-                                            <% if (song.album) { %>
-                                                <p class="song-album">
-                                                    <%= song.album %>
-                                                </p>
-                                                <% } %>
-
-                                                    <% if (song.description) { %>
-                                                        <p class="song-description">
-                                                            <%= song.description %>
-                                                        </p>
-                                                        <% } %>
-
-                                                            <div class="song-card-footer">
-                                                                <span>
-                                                                    Shared by
-                                                                    <strong>
-                                                                        <%= song.user?.username || 'Unknown user' %>
-                                                                    </strong>
-                                                                </span>
-
-                                                                <a href="/songs/<%= song._id %>">
-                                                                    View →
-                                                                </a>
-
-                                                                <form action="/songs/<%= song._id %>/upvote"
-                                                                    method="POST">
-                                                                    <button type="submit"
-                                                                        class="card-upvote-btn <%= currentUser && song.upvotes?.some(id => String(id) === String(currentUser._id)) ? 'upvoted' : '' %>"
-                                                                        aria-label="Upvote <%= song.title %>"
-                                                                        aria-pressed="<%= currentUser ? song.upvotes?.some(id => String(id) === String(currentUser._id)) : false %>">
-                                                                        <span aria-hidden="true">▲</span>
-                                                                        <span class="upvote-count">
-                                                                            <%= song.upvotes?.length || 0 %>
-                                                                        </span>
-                                                                    </button>
-                                                                </form>
-
-                                                            </div>
-
-                                        </div>
-                                    </article>
-
-                                    <% }) %>
-
-                            </div>
-
-                            <% } %>
-
-                </section>
-
-                <section class="features">
-
-                    <h2>Find Your Frequency.</h2>
-
-                    <p class="section-description">
-                        A space for discovering, sharing, and celebrating music.
-                    </p>
-
-                    <div class="feature-container">
-
-                        <article class="feature-card">
-                            <span class="feature-icon">♫</span>
-                            <h3>Discover</h3>
-                            <p>
-                                Find your next favorite song through
-                                recommendations from real music fans.
-                            </p>
-                        </article>
-
-                        <article class="feature-card">
-                            <span class="feature-icon">◎</span>
-                            <h3>Share</h3>
-                            <p>
-                                Introduce people to the tracks, albums,
-                                and artists you can't stop listening to.
-                            </p>
-                        </article>
-
-                        <article class="feature-card">
-                            <span class="feature-icon">✦</span>
-                            <h3>Upvote</h3>
-                            <p>
-                                Show love for the recommendations you
-                                enjoy and see which songs rise to the top.
-                            </p>
-                        </article>
-
-                    </div>
-                </section>
-
-                <section class="join">
-
-                    <h2>Your next favorite track is one conversation away.</h2>
-
-                    <p>
-                        Join a community built around discovering,
-                        sharing, and appreciating good music.
-                    </p>
-
-                    <% if (currentUser) { %>
-                        <a href="/songs/new" class="cta-button">
-                            Share Your Music →
-                        </a>
-                        <% } else { %>
-                            <a href="/signup" class="cta-button">
-                                Get Started →
-                            </a>
-                            <% } %>
-
-                </section>
-
+        <p class="disclaimer">Initial prototype · Fictional businesses and sample scores unless marked live. Scores suggest areas to review; they do not establish a business’s need for services.</p>
     </main>
-
-    <footer class="site-footer">
-        <p>&copy; 2026 Vinyl Room. Made for music lovers.</p>
-    </footer>
-    <script src="/main.js" defer></script>
+    <div id="toast" role="status"></div>
 </body>
 
 </html>
