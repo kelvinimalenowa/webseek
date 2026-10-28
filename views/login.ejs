@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | WebSeek</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <main class="auth-page">
+        <section class="auth-card" aria-labelledby="login-heading">
+            <a href="/" class="brand">WebSeek</a>
+
+            <h1 id="login-heading">Welcome back.</h1>
+            <p>Log in to manage your prospects.</p>
+
+            <form action="/login" method="POST">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+                <button type="submit" class="primary">Log in</button>
+            </form>
+
+            <p>New to WebSeek? <a href="/signup">Create an account</a></p>
+        </section>
+    </main>
+</body>
+
+</html>
