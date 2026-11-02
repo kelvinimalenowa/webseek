@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover | WebSeek</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <main>
+        <a href="/dashboard">Back to dashboard</a>
+
+        <h1>Discover businesses</h1>
+        <p>Find businesses to research for your next opportunity.</p>
+        <p>Demo data: these businesses are fictional.</p>
+
+        <form action="/discover" method="GET">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" placeholder="Boston, MA" value="<%= location %>">
+
+            <label for="industry">Industry</label>
+            <select id="industry" name="industry">
+                <option value="">All industries</option>
+
+                <option value="Café" <%=industry==='Café' ? 'selected' : '' %>>
+                    Cafés
+                </option>
+
+                <option value="Restaurant" <%=industry==='Restaurant' ? 'selected' : '' %>>
+                    Restaurants
+                </option>
+            </select>
+
+            <button type="submit">Search businesses</button>
+            <a href="/discover">Clear search</a>
+        </form>
+
+        <section aria-label="Business results">
+            <% if (businesses.length===0) { %>
+                <p>No mock businesses match your search. Try another location or industry.</p>
+                <% } %>
+                    <% businesses.forEach(business=> { %>
+                        <article>
+                            <h2>
+                                <%= business.name %>
+                            </h2>
+                            <p>
+                                <%= business.industry %>
+                            </p>
+                            <p>
+                                <%= business.location %>
+                            </p>
+                        </article>
+                        <% }) %>
+        </section>
+    </main>
+</body>
+
+</html>
