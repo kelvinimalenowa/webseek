@@ -14,12 +14,11 @@
 
         <h1>Discover businesses</h1>
         <p>Find businesses to research for your next opportunity.</p>
-        <p>Demo data: these businesses are fictional.</p>
+        <p>Business listings from Google Maps via SerpApi.</p>
 
         <form action="/discover" method="GET">
             <label for="location">Location</label>
-            <input type="text" id="location" name="location" placeholder="Boston, MA" value="<%= location %>">
-
+            <input type="text" id="location" name="location" placeholder="Boston, MA" value="<%= location %>" required>
             <label for="industry">Industry</label>
             <select id="industry" name="industry">
                 <option value="">All industries</option>
@@ -38,22 +37,28 @@
         </form>
 
         <section aria-label="Business results">
-            <% if (businesses.length===0) { %>
-                <p>No mock businesses match your search. Try another location or industry.</p>
-                <% } %>
-                    <% businesses.forEach(business=> { %>
-                        <article>
-                            <h2>
-                                <%= business.name %>
-                            </h2>
-                            <p>
-                                <%= business.industry %>
-                            </p>
-                            <p>
-                                <%= business.location %>
-                            </p>
-                        </article>
-                        <% }) %>
+            <% if (error) { %>
+                <p role="alert">
+                    <%= error %>
+                </p>
+                <% } else if (!hasSearched) { %>
+                    <p>Enter a location to search for businesses.</p>
+                    <% } else if (businesses.length===0) { %>
+                        <p>No businesses found. Try another location or industry.</p>
+                        <% } %>
+                            <% businesses.forEach(business=> { %>
+                                <article>
+                                    <h2>
+                                        <%= business.name %>
+                                    </h2>
+                                    <p>
+                                        <%= business.industry %>
+                                    </p>
+                                    <p>
+                                        <%= business.location %>
+                                    </p>
+                                </article>
+                                <% }) %>
         </section>
     </main>
 </body>

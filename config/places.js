@@ -1,34 +1,44 @@
 async function searchBusinesses(location, industry) {
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY
+    const apiKey = process.env.SERPAPI_API_KEY
 
     if (!apiKey) {
-        throw new Error('Google Places API key is missing.')
+        throw new Error('SerpApi key is missing.')
     }
 
-    const response = await fetch(
-        'https://places.googleapis.com/v1/places:searchText',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-Api-Key': apiKey,
-                'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.attributions'
-            },
-            body: JSON.stringify({
-                textQuery: `${industry} in ${location}`,
-                pageSize: 5
-            }),
-            signal: AbortSignal.timeout(15000)
-        }
-    )
+    const url = new URL('https://serpapi.com/search.json')
+
+    url.searchParams.set('engine', 'google_maps')
+    url.searchParams.set('type', 'search')
+    url.searchParams.set('q', `${industry || 'businesses'} in ${location}`)
+    url.searchParams.set('hl', 'en')
+    url.searchParams.set('api_key', apiKey)
+
+    const response = await fetch(url, {
+        signal: AbortSignal.timeout(30000)
+    })
 
     if (!response.ok) {
-        throw new Error(`Google Places request failed: ${response.status}`)
+        throw new Error(`SerpApi request failed: ${response.status}`)
     }
 
+    //handling searches with no results
     const data = await response.json()
 
-    return data.places || []
+    const noResults =
+        data.search_metadata?.status === 'Success' &&
+        data.search_information?.local_results_state === 'Fully empty'
+
+    if (noResults) {
+        return []
+    }
+    //
+    if (data.error) {
+        throw new Error(
+            'SerpApi could not complete the search. Check your key, quota, and query.'
+        )
+    }
+
+    return data.local_results || []
 }
 
 module.exports = searchBusinesses

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const User = require('./models/user')
+const searchBusinesses = require('../config/places')
 
 module.exports = function (app) {
     app.get('/', (req, res) => {
@@ -92,24 +93,10 @@ module.exports = function (app) {
         }
     })
 
-    //loading new business discover page
-    app.get('/discover', (req, res) => {
+    app.get('/discover', async (req, res) => {
         if (!req.session.userId) {
             return res.redirect('/login')
         }
-
-        const businesses = [
-            {
-                name: 'Juniper Coffee House',
-                industry: 'Café',
-                location: 'Boston, MA'
-            },
-            {
-                name: 'Harbor & Hearth',
-                industry: 'Restaurant',
-                location: 'Boston, MA'
-            }
-        ]
 
         const location = typeof req.query.location === 'string'
             ? req.query.location.trim()
@@ -119,21 +106,32 @@ module.exports = function (app) {
             ? req.query.industry.trim()
             : ''
 
-        const filteredBusinesses = businesses.filter(business => {
-            const matchesLocation = business.location
-                .toLowerCase()
-                .includes(location.toLowerCase())
+        const hasSearched = location !== ''
 
-            const matchesIndustry = industry === '' ||
-                business.industry.toLowerCase() === industry.toLowerCase()
+        let businesses = []
+        let error = ''
 
-            return matchesLocation && matchesIndustry
-        })
+        if (hasSearched) {
+            try {
+                const places = await searchBusinesses(location, industry)
+
+                businesses = places.map(place => ({
+                    name: place.title || 'Unnamed business',
+                    industry: place.type || 'Category not listed',
+                    location: place.address || 'Address not listed'
+                }))
+            } catch (err) {
+                error = 'Business search could not be completed. Please try again.'
+                res.status(502)
+            }
+        }
 
         res.render('discover', {
-            businesses: filteredBusinesses,
+            businesses: businesses,
             location: location,
-            industry: industry
+            industry: industry,
+            hasSearched: hasSearched,
+            error: error
         })
     })
 
